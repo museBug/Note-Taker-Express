@@ -6,7 +6,6 @@ const path = require('path');
 
 // get a note
 router.get("/notes", function(request, response) {
-  
   response.send(db);
 });
 
@@ -16,13 +15,13 @@ router.get("/notes", function(request, response) {
    res.json(true);
    const data = JSON.stringify(db);
    writeDb();
- })
- //
+ });
+ // delete a note
  router.delete("/notes/:id", function(req, res) {
  db = db.filter(elem => elem.id != req.params.id);
  res.json(true);
  writeDb();
- })
+ });
 
  function writeDb() {
  const data = JSON.stringify(db,null,"\t")
