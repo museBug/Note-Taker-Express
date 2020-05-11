@@ -1,30 +1,36 @@
-const router = require("express").Router();
-const db = require("../db/db.json");
-const fs = require('fs');
+let db = require("../db/db.json");
 const store = require("../js/store");
-const path = require('path');
+const fs = require("fs");
+const router = require("express").Router();
+const path = require("path");
 
-// get a note
 router.get("/notes", function(request, response) {
-  response.send(db);
+  response.json(db);
 });
 
- // post a note
- router.post("/notes", function(req, res) {
-   db.push(store(req.body));
-   res.json(true);
-   const data = JSON.stringify(db);
-   writeDb();
- });
- // delete a note
- router.delete("/notes/:id", function(req, res) {
- db = db.filter(elem => elem.id != req.params.id);
- res.json(true);
- writeDb();
- });
+router.post("/notes", function(request, response) {
+  let newNote = store(request.body);
+  db.push(newNote);
+  databaseWrite();
+  response.send(`Successfully added an entry!`)
+});
 
- function writeDb() {
- const data = JSON.stringify(db,null,"\t")
- fs.writeFile(path.join(__dirname, "../db/db.json"), data, err => {if (err) throw err});
- }
- module.exports = router;
+router.delete("/notes/:id", function(request, response) {
+  let noteID = request.params.id;
+  db = db.filter(entry => entry.id !== noteID);
+  databaseWrite();
+  response.send("Successfully deleted an entry!")
+});
+
+function databaseWrite() {
+ let note = JSON.stringify(db);
+ fs.writeFile(path.join(__dirname,"../db/db.json"),note, function(err) {
+    if (err) {
+      return console.log(err);
+    }
+    console.log("Success!");
+ });
+}
+
+module.exports = router;
+
